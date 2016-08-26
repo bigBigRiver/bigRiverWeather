@@ -7,8 +7,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import com.example.bigriverweather.model.City;
+import com.example.bigriverweather.model.County;
 import com.example.bigriverweather.model.Province;
 
 
@@ -117,7 +119,37 @@ public class BigRiverWeatherDB {
 		}
 		return list;
 	}
-	
+	/*
+	 * 将county实例存储到数据库当中
+	 */
+	public void saveCounty(County county){
+		if(county != null){
+			ContentValues values = new ContentValues();
+			values.put("county_name", county.getCountyName());
+			values.put("county_code", county.getCountyCode());
+			values.put("city_id", county.getCityId());
+			db.insert("County", null, values);
+		}
+	}
+	/*
+	 * 从数据库中读取某城市下所有的县的信息
+	 */
+	public List<County> loadCounties(int cityId){
+		List<County> list = new ArrayList<County>();
+		Cursor cursor = db.query("County",  null, "cityId = ?", 
+				new String [] {String.valueOf(cityId)}, null, null, null);
+		if(cursor.moveToFirst()){
+			do{
+				County county = new County();
+				county.setId(cursor.getInt(cursor.getColumnIndex("id")));
+				county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
+				county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
+				county.setCityId(cityId);
+				list.add(county);
+			}while(cursor.moveToNext());
+		}
+		return list;
+	}
 }
 
 

@@ -1,6 +1,6 @@
 package com.example.bigriverweather.model;
 
-public class county {
+public class County {
 	private int id;
 	private String countyName;
 	private String countyCode;
