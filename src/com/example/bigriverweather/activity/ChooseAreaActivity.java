@@ -94,9 +94,9 @@ public class ChooseAreaActivity extends Activity{
 		setContentView(R.layout.choose_area);
 		listView = (ListView)findViewById(R.id.list_view);
 		titleText = (TextView)findViewById(R.id.title_text);
-		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,dataList);
 		listView.setAdapter(adapter);
-		bigRiverWeatherDB = BigRiverWeatherDB.getInstance(this);
+		bigRiverWeatherDB = BigRiverWeatherDB.getInstance(this);//通过调试，这里有问题。 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
@@ -113,8 +113,7 @@ public class ChooseAreaActivity extends Activity{
 					queryCounties();
 				}
 				
-			}
-			
+			}			
 		});
 		queryProvinces();
 	}
@@ -123,8 +122,12 @@ public class ChooseAreaActivity extends Activity{
 	 * 查询全国所有省份的信息，优先从数据库中查询，如果没有查询到再到服务器上查询
 	 */
 	private void queryProvinces(){
+		LogUtil.d("ChooseAreaActivity", "onCreate---->queryProvinces()---firstLine----");
 		provinceList = bigRiverWeatherDB.loadProvince();
+		LogUtil.d("ChooseAreaActivity", "onCreate---->queryProvinces()---3th Line----");
+		
 		if(provinceList.size() > 0){
+			LogUtil.d("ChooseAreaActivity", "onCreate---->queryProvinces()---if--size>0-----");
 			dataList.clear();
 			for(Province province : provinceList){
 				dataList.add(province.getProvinceName());
@@ -134,7 +137,7 @@ public class ChooseAreaActivity extends Activity{
 			titleText.setText("China");
 			currentLevel = LEVEL_PROVINCE;
 		}else{
-			//queryFromServer(null,"province");
+			queryFromServer(null,"province");
 		}
 	}
 	private void queryCities() {
@@ -149,7 +152,7 @@ public class ChooseAreaActivity extends Activity{
 			titleText.setText(selectedProvince.getProvinceName());
 			currentLevel = LEVEL_CITY;
 		} else {
-			//queryFromServer(selectedProvince.getProvinceCode(), "city");
+			queryFromServer(selectedProvince.getProvinceCode(), "city");
 		}
 	}
 	private void queryCounties() {
@@ -164,7 +167,7 @@ public class ChooseAreaActivity extends Activity{
 			titleText.setText(selectedCity.getCityName());
 			currentLevel = LEVEL_COUNTY;
 		} else {
-//			queryFromServer(selectedCity.getCityCode(), "county");
+			queryFromServer(selectedCity.getCityCode(), "county");
 		}
 	}
 	
@@ -175,7 +178,7 @@ public class ChooseAreaActivity extends Activity{
 		}else{
 			address = "http://www.weather.com.cn/data/list3/city.xml";
 		}
-//		showProgressDialog();
+		showProgressDialog();
 		HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
 			
 			@Override
@@ -195,7 +198,7 @@ public class ChooseAreaActivity extends Activity{
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							//closeProgressDialog();
+							closeProgressDialog();
 							if ("province".equals(type)) {
 								queryProvinces();
 							} else if ("city".equals(type)) {
@@ -214,7 +217,7 @@ public class ChooseAreaActivity extends Activity{
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						//closeProgressDialog();
+						closeProgressDialog();
 						Toast.makeText(ChooseAreaActivity.this,
 										"发生未知错误！", Toast.LENGTH_SHORT).show();
 					}

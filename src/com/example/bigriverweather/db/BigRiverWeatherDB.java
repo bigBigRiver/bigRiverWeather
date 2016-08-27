@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import com.example.bigriverweather.model.City;
 import com.example.bigriverweather.model.County;
 import com.example.bigriverweather.model.Province;
+import com.example.bigriverweather.util.LogUtil;
 
 
 /**
@@ -43,6 +44,7 @@ public class BigRiverWeatherDB {
 	private BigRiverWeatherDB(Context context){
 		BigRiverWeatherOpenHelper dbHelper = new BigRiverWeatherOpenHelper(context, DB_NAME, null, VERSION);
 		db = dbHelper.getWritableDatabase();
+		LogUtil.d("BigRiverWeatherDB", "private--constructor------");
 	}
 	
 	/*
@@ -51,7 +53,10 @@ public class BigRiverWeatherDB {
 	public synchronized static BigRiverWeatherDB getInstance(Context context){
 		if(bigRiverWeatherDB == null){
 			bigRiverWeatherDB = new BigRiverWeatherDB(context);
+			LogUtil.d("BigRiverWeatherDB", "getInstance-----if---");
 		}
+		LogUtil.d("BigRiverWeatherDB", "getInstance-----not-null---");
+		
 		return bigRiverWeatherDB;
 	}
 	
